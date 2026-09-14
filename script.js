@@ -5,6 +5,36 @@ document.querySelectorAll('a[href^="#"]').forEach((link)=>{
   });
 });
 
-// VIDEO SLOT
-// Quando o vídeo estiver pronto, substitua o conteúdo de #video-slot por um iframe responsivo
-// (YouTube/Vimeo) ou por uma tag <video controls poster="...">.
+const video=document.getElementById('sales-video');
+const soundToggle=document.getElementById('sound-toggle');
+
+if(video){
+  video.muted=true;
+
+  const observer=new IntersectionObserver((entries)=>{
+    entries.forEach((entry)=>{
+      if(entry.isIntersecting && entry.intersectionRatio>=0.45){
+        const playPromise=video.play();
+        if(playPromise && typeof playPromise.catch==='function') playPromise.catch(()=>{});
+      }else if(!entry.isIntersecting){
+        video.pause();
+      }
+    });
+  },{threshold:[0,.45,.75]});
+
+  observer.observe(video);
+
+  if(soundToggle){
+    soundToggle.addEventListener('click',()=>{
+      video.muted=!video.muted;
+      if(video.muted){
+        soundToggle.textContent='🔊 Toque para ouvir';
+        soundToggle.classList.remove('is-on');
+      }else{
+        soundToggle.textContent='Som ativado';
+        soundToggle.classList.add('is-on');
+        video.play().catch(()=>{});
+      }
+    });
+  }
+}
